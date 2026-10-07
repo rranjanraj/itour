@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iTour Login</title>
+
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0b2f4e 0%, #2a7fa8 55%, #f7c58b 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+    opacity: 0.8;
+    animation: move 30s linear infinite alternate;
+  }
+  .c1 { width: 160px; height: 40px; top: 15%; left: 10%; }
+  .c2 { width: 220px; height: 50px; top: 65%; left: 60%; }
+  @keyframes move {
+    from { transform: translateX(-30px); }
+    to   { transform: translateX(60px); }
+  }
+  #flight {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 5;
+  }
+  #trail {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.8);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .card {
+    width: 360px;
+    max-width: 92%;
+    background: #fffaf2;
+    padding: 28px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+    z-index: 3;
+    opacity: 0;
+    transform: translateY(40px) scale(0.94);
+    visibility: hidden;
+    transition: opacity 0.7s, transform 0.8s, visibility 0s 0.8s;
+  }
+  body.open .card {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  h1 { margin: 0 0 4px; font-size: 24px; color: #12232f; }
+  .sub { margin: 0 0 20px; color: #5d6e79; font-size: 14px; }
+  label { display: block; margin: 12px 0 6px; font-size: 14px; font-weight: bold; color: #12232f; }
+  input[type=email], input[type=password], input[type=text] {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    border: 1.5px solid #d9cfbf;
+    border-radius: 10px;
+    outline: none;
+  }
+  input:focus { border-color: #0d8f8f; }
+  .pw-box { position: relative; }
+  .eye {
+    position: absolute; right: 8px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: 0; cursor: pointer;
+    color: #5d6e79; font-weight: bold;
+  }
+  .error { color: #b3261e; font-size: 13px; min-height: 16px; margin-top: 4px; }
+  button.login {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: #0d8f8f;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  button.login:hover { background: #0a7878; }
+  #msg { text-align: center; margin-top: 14px; font-weight: bold; min-height: 20px; }
+  .ok  { color: #1b7a43; }
+  .bad { color: #b3261e; }
+  .hint { text-align: center; font-size: 12.5px; color: #5d6e79; margin: 12px 0 0; }
+  
+  /* Register link styling */
+  .signup-text {
+    text-align: center;
+    font-size: 13.5px;
+    color: #5d6e79;
+    margin-top: 16px;
+  }
+  .signup-text a {
+    color: #0d8f8f;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  .signup-text a:hover {
+    text-decoration: underline;
+  }
+
+  .small-btn {
+    position: absolute; bottom: 20px;
+    z-index: 6;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid white;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+  }
+  #skip   { right: 20px; }
+  #replay { left: 20px; display: none; }
+  body.open #skip   { display: none; }
+  body.open #replay { display: block; }
+</style>
+</head>
+
+<body>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+
+  <svg id="flight">
+    <path id="trail"></path>
+    <g id="plane" style="display:none">
+      <path fill="white" d="M-34 0 L-18 -4 L2 -5 L-10 -34 L-2 -34 L22 -6 L34 -5 C42 -4 46 -1 46 0 C46 1 42 4 34 5 L22 6 L-2 34 L-10 34 L2 5 L-18 4 Z"/>
+      <circle cx="30" cy="0" r="2.2" fill="#0b2f4e"/>
+    </g>
+  </svg>
+
+  <div class="card">
+    <h1>Welcome to iTour</h1>
+    <p class="sub">Sign in to see your itinerary.</p>
+
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@example.com">
+      <div class="error" id="emailError"></div>
+
+      <label for="password">Password</label>
+      <div class="pw-box">
+        <input type="password" id="password" placeholder="At least 6 characters">
+        <button type="button" class="eye" id="eye">Show</button>
+      </div>
+      <div class="error" id="passError"></div>
+
+      <button type="submit" class="login">Sign in</button>
+      <div id="msg"></div>
+    </form>
+
+    <!-- Register Text inside Card -->
+    <p class="signup-text">
+      Don't have an account? <a href="register.html">Register here</a>
+    </p>
+
+    <p class="hint">Demo: demo@itour.com / fly1234</p>
+  </div>
+
+  <button class="small-btn" id="skip">Skip intro</button>
+  <button class="small-btn" id="replay">Replay flight</button>
+
+<script>
+  var svg    = document.getElementById("flight");
+  var trail  = document.getElementById("trail");
+  var plane  = document.getElementById("plane");
+  var animationId;
+
+  var DURATION = 3500;
+  var OPEN_AT  = 0.5;
+
+  function startFlight() {
+    cancelAnimationFrame(animationId);
+    document.body.classList.remove("open");
+
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+
+    var d = "M -90 " + (h * 0.88) +
+            " C " + (w * 0.28) + " " + h + ", " +
+            (w * 0.38) + " " + (h * 0.05) + ", " +
+            (w + 120) + " " + (h * 0.16);
+    trail.setAttribute("d", d);
+
+    var total = trail.getTotalLength();
+    trail.style.strokeDasharray = total;
+    trail.style.strokeDashoffset = total;
+    trail.style.opacity = 1;
+    plane.style.display = "block";
+
+    var startTime = null;
+    var opened = false;
+
+    function step(time) {
+      if (!startTime) startTime = time;
+      var t = Math.min((time - startTime) / DURATION, 1);
+      var p = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+      var length = p * total;
+      var a = trail.getPointAtLength(length);
+      var b = trail.getPointAtLength(Math.min(length + 2, total));
+      var angle = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+      var size = 0.9 + 0.5 * Math.sin(Math.PI * p);
+
+      plane.setAttribute("transform",
+        "translate(" + a.x + "," + a.y + ") rotate(" + angle + ") scale(" + size + ")");
+      trail.style.strokeDashoffset = total - length;
+
+      if (!opened && t >= OPEN_AT) {
+        opened = true;
+        document.body.classList.add("open");
+      }
+
+      if (t < 1) {
+        animationId = requestAnimationFrame(step);
+      } else {
+        plane.style.display = "none";
+        trail.style.transition = "opacity 1s";
+        trail.style.opacity = 0;
+      }
+    }
+    animationId = requestAnimationFrame(step);
+  }
+
+  document.getElementById("skip").onclick = function () {
+    cancelAnimationFrame(animationId);
+    plane.style.display = "none";
+    trail.style.opacity = 0;
+    document.body.classList.add("open");
+  };
+  document.getElementById("replay").onclick = function () {
+    trail.style.transition = "none";
+    startFlight();
+  };
+
+  var pass = document.getElementById("password");
+  document.getElementById("eye").onclick = function () {
+    if (pass.type === "password") {
+      pass.type = "text";
+      this.textContent = "Hide";
+    } else {
+      pass.type = "password";
+      this.textContent = "Show";
+    }
+  };
+
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    var email = document.getElementById("email").value.trim();
+    var password = pass.value;
+    var msg = document.getElementById("msg");
+    var ok = true;
+
+    msg.textContent = "";
+    document.getElementById("emailError").textContent = "";
+    document.getElementById("passError").textContent = "";
+
+    if (email.indexOf("@") === -1 || email.indexOf(".") === -1) {
+      document.getElementById("emailError").textContent = "Enter a valid email";
+      ok = false;
+    }
+    if (password.length < 6) {
+      document.getElementById("passError").textContent = "Password must be at least 6 characters";
+      ok = false;
+    }
+    if (!ok) return;
+
+    fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: password })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        msg.className = data.ok ? "ok" : "bad";
+        msg.textContent = data.message;
+      })
+      .catch(function () {
+        msg.className = "bad";
+        msg.textContent = "Could not reach the server.";
+      });
+  });
+
+  startFlight();
+</script>
+</body>
+</html>
